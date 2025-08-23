@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "socket.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon socket.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "google-finance": "^0.1.12",
+    "ws": "^8.18.3",
+    "yahoo-finance": "^0.3.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
