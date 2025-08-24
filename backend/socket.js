@@ -1,15 +1,41 @@
 import { WebSocketServer } from "ws";
+import express from "express";
+import http from "http";
+import cors from "cors";
+import { getStocksPortfilio } from "./db.js";
+import { scrapeStockInfo } from "./scraper.js";
 
-let wss = new WebSocketServer({ port: 8080 });
+const app = express();
 
-wss.on("connection", function connection(ws) {
-  console.log("A new client connected!");
-  ws.on("message", function message(data) {
-    console.log("received: %s", data);
-  });
+const server = http.createServer(app);
+
+const wss = new WebSocketServer({ server });
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+}));
+
+app.get("/portfolio", (req, res) => {
+    const sectors = getStocksPortfilio();
+    res.json({sectors });
 });
 
-console.log("WebSocket server is running on ws://localhost:8080");
+wss.on("connection", function connection(ws) {
+    console.log("A new client connected!");
+    const sendStockData = async () => {
+        const data = await scrapeStockInfo();
+        ws.send(JSON.stringify({ type: "stockUpdate", payload: data }));
+    };
+    sendStockData();
+    const interval = setInterval(sendStockData, 5000);
+});
+
+// console.log("WebSocket server is running on ws://localhost:8080");
+
+server.listen(8080, () => {
+    console.log("HTTP server is running on http://localhost:8080");
+});
 
 // export interface Stock {
 //   name: string;
