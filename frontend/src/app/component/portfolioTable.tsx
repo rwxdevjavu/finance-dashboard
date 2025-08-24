@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import MemoRow from "./memoRow";
 
 export interface Stock {
   name: string;
@@ -58,6 +59,7 @@ export default function PortfolioTable() {
 
       ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
+        console.log(msg)
 
         // msg.payload should be an array of StockUpdate
         msg.payload.forEach((update: StockUpdate) => {
@@ -69,7 +71,7 @@ export default function PortfolioTable() {
       };
 
       ws.onclose = () => {
-        console.error("❌ WebSocket closed, retrying in 1s...");
+        console.log("❌ WebSocket closed, retrying in 1s...");
         reconnectTimer = setTimeout(connect, 1000);
       };
     };
@@ -118,56 +120,8 @@ export default function PortfolioTable() {
                 </thead>
                 <tbody>
                 {sector.stocks.map((stock, j) => {
-                    const liveData = stockInfo[stock.symbol] || {};
-
-                    const cmp = liveData?.cmp ?? "-";
-                    const present = liveData?.present ?? "-";
-                    const gain = liveData?.gain ?? null;
-                    const peRatio = liveData?.peRatio ?? "-";
-                    const latestEarnings = liveData?.latestEarnings ?? null;
-
-                    return (
-                    <tr key={j} className="hover:bg-gray-800">
-                        <td className="px-4 py-2 border border-gray-700">{stock.name}</td>
-                        <td className="px-4 py-2 border border-gray-700">
-                        ₹{stock.purchasePrice}
-                        </td>
-                        <td className="px-4 py-2 border border-gray-700">{stock.qty}</td>
-                        <td className="px-4 py-2 border border-gray-700">
-                        ₹{stock.investment.toLocaleString()}
-                        </td>
-                        <td className="px-4 py-2 border border-gray-700">
-                        {stock.portfolioPercentage}
-                        </td>
-
-                        {/* Live Data */}
-                        <td className="px-4 py-2 border border-gray-700">
-                        {cmp !== "-" ? `₹${cmp}` : "-"}
-                        </td>
-                        <td className="px-4 py-2 border border-gray-700">
-                        {present !== "-" ? `₹${present}` : "-"}
-                        </td>
-                        <td
-                        className={`px-4 py-2 border border-gray-700 ${
-                            gain > 0
-                            ? "text-green-400"
-                            : gain < 0
-                            ? "text-red-400"
-                            : "text-gray-300"
-                        }`}
-                        >
-                        {gain !== null ? `₹${gain}` : "-"}
-                        </td>
-                        <td className="px-4 py-2 border border-gray-700">
-                        {peRatio !== "-" ? peRatio : "-"}
-                        </td>
-                        <td className="px-4 py-2 border border-gray-700">
-                        {latestEarnings
-                            ? `${latestEarnings}`
-                            : "-"}
-                        </td>
-                    </tr>
-                    );
+                  const liveData = stockInfo[stock.symbol];
+                  return <MemoRow key={j} stock={stock} liveData={liveData} />;
                 })}
                 </tbody>
             </table>

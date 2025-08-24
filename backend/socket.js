@@ -26,6 +26,7 @@ wss.on("connection", function connection(ws) {
     const sendStockData = async () => {
         const data = await scrapeStockInfo();
         ws.send(JSON.stringify({ type: "stockUpdate", payload: data }));
+        console.log(data);
     };
     sendStockData();
     const interval = setInterval(sendStockData, 5000);
