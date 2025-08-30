@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import MemoRow from "./memoRow";
 
-const wsUrl:string = process.env.NEXT_PUBLIC_API_URL!;
+const wsUrl:string = process.env.NEXT_PUBLIC_WS_URL!;
 
 export interface Stock {
   name: string;
@@ -42,7 +42,7 @@ export default function PortfolioTable() {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    fetch(wsUrl+"/portfolio")
+    fetch(`${wsUrl}/portfolio`)
       .then((res) => res.json())
       .then((data) => setPortfolio(data))
       .catch((err) => console.error("Fetch error:", err));
